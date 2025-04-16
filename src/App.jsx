@@ -1,35 +1,55 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+/*
+ * @Author: Diana Tang
+ * @Date: 2025-04-16 16:55:13
+ * @LastEditors: Diana Tang
+ * @Description: some description
+ * @FilePath: /chiplot-demo/src/App.jsx
+ */
+import React, { useState } from 'react';
+import { Layout } from 'antd';
+import UploadPanel from './components/UploadPanel';
+import ParamControls from './components/ParamControls';
+import VolcanoPlot from './components/VolcanoPlot';
+
+const { Header, Content } = Layout;
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [data, setData] = useState([]);
+  const [columns, setColumns] = useState([]);
+  const [pKey, setPKey] = useState('');
+  const [fcKey, setFcKey] = useState('');
+  const [pCutoff, setPCutoff] = useState(0.05);
+  const [fcCutoff, setFCCutoff] = useState(1.0);
+
+  const onDataParsed = (parsed) => {
+    setData(parsed);
+    if (parsed.length > 0) setColumns(Object.keys(parsed[0]));
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Layout style={{ minHeight: '100vh' }}>
+      <Header style={{ color: 'white', fontSize: 24 }}>🎯 CHIPlot - 火山图在线绘制</Header>
+      <Content style={{ padding: 24 }}>
+        <UploadPanel onDataParsed={onDataParsed} />
+        {columns.length > 0 && (
+          <>
+            <ParamControls
+              columns={columns}
+              pKey={pKey}
+              setPKey={setPKey}
+              fcKey={fcKey}
+              setFcKey={setFcKey}
+              pCutoff={pCutoff}
+              setPCutoff={setPCutoff}
+              fcCutoff={fcCutoff}
+              setFCCutoff={setFCCutoff}
+            />
+            <VolcanoPlot data={data} pKey={pKey} fcKey={fcKey} pCutoff={pCutoff} fcCutoff={fcCutoff} />
+          </>
+        )}
+      </Content>
+    </Layout>
+  );
 }
 
-export default App
+export default App;
